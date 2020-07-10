@@ -20,7 +20,10 @@ public class WebCrawler {
         BufferedReader bufferedReader = null;
 
         while (!queue.isEmpty()) {
+
+            // using poll() to retrieve and remove the head
             String crawledUrl = queue.poll();
+
             System.out.println("\n=== Site crawled: " + crawledUrl + " ===");
 
             if (marked.size() > 100) {
@@ -34,27 +37,41 @@ public class WebCrawler {
             while (!ok) {
                 try {
                     url = new URL(crawledUrl);
+                    //The openStream() method returns a java.io.InputStream object, so reading from a URL is as easy as reading from an input stream.
                     bufferedReader = new BufferedReader(new InputStreamReader(url.openStream()));
                     ok = true;
                 } catch (MalformedURLException e) {
                     System.out.println("*** Malformed URL: " + crawledUrl);
+                    // using poll() to retrieve and remove the head
                     crawledUrl = queue.poll();
                     ok = false;
 
                 } catch (IOException ioe) {
                     System.out.println("*** IOException URL: " + crawledUrl);
+                    // using poll() to retrieve and remove the head
                     crawledUrl = queue.poll();
                     ok = false;
                 }
             }
+            //Trong java, lớp StringBuilder được sử dụng để tạo chuỗi có thể thay đổi (mutable).
+            //Lớp StringBuilder trong java tương tự như lớp StringBuilder ngoại trừ nó không đồng bộ(non-synchronized).
+
+            // create a StringBuilder object
+            // usind StringBuilder() constructor
             StringBuilder stringBuilder = new StringBuilder();
             String tmp = null;
 
             while ((tmp = bufferedReader.readLine()) != null) {
+                // Phương thức append() của lớp StringBuilder nối thêm tham số vào cuối chuỗi.
+                // Appends the specified string to this character sequence.
                 stringBuilder.append(tmp);
             }
             tmp = stringBuilder.toString();
+
+            // Create a Pattern object
             Pattern pattern = Pattern.compile(regex);
+
+            // Now create matcher object.
             Matcher matcher = pattern.matcher(tmp);
 
             while (matcher.find()) {
@@ -86,6 +103,5 @@ public class WebCrawler {
             showResult();
         } catch (IOException ignored) {
         }
-
     }
 }
